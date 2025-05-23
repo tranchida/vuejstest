@@ -10,6 +10,7 @@ import (
 )
 
 type Message struct {
+	Id      int    `json:"id"`
 	Message string `json:"message"`
 }
 
@@ -140,12 +141,26 @@ func main() {
 	))
 
 	e.GET("/api/message", func(c echo.Context) error {
-		return c.JSONPretty(http.StatusOK, Message{Message: randomMessage()}, "  ")
+		id, message := randomMessage()
+		return c.JSONPretty(http.StatusOK, Message{Id: id, Message: message}, "  ")
+	})
+	e.GET("/api/messages", func(c echo.Context) error {
+		msgs := make([]Message, len(messages))
+		for i, m := range messages {
+			msgs[i] = Message{
+				Id:      i + 1,
+				Message: m}
+		}
+
+		return c.JSONPretty(http.StatusOK,
+			msgs,
+			"  ")
 	})
 	e.Logger.Fatal(e.Start(":8080"))
 
 }
 
-func randomMessage() string {
-	return messages[rand.Intn(len(messages))]
+func randomMessage() (int,string) {
+	id := rand.Intn(len(messages))
+	return id + 1, messages[id]
 }
