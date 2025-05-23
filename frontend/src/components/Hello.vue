@@ -1,20 +1,18 @@
 <script setup lang="js">
 import { ref } from 'vue';
-import axios from 'axios';
+import { messageService } from '../services/messageService';
 
 const message = ref('Hello Tailwind CSS 4.1!');
 const count = ref(0);
 
-function changeMessage() {
-  axios.get('/api/message')
-    .then(response => {
-      message.value = response.data.message;
-    })
-    .catch(error => {
-      message.value = 'Error fetching message' + error;
-      console.error('Error fetching message:', error);
-    });
-  //message.value = 'Hello Vue 3!';
+async function changeMessage() {
+  try {
+    const data = await messageService.getMessage();
+    message.value = data.message;
+  } catch (error) {
+    console.error('Error in component:', error);
+    message.value = 'Error fetching message' + error;
+  }
   increment();
 }
 
